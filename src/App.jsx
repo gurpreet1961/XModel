@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
 
 const App = () => {
@@ -10,7 +10,21 @@ const App = () => {
 		phone: "",
 		dob: "",
 	});
+	const modalRef = useRef(null);
 
+	useEffect(() => {
+		const handleOutsideClick = (event) => {
+			if (modalRef.current && !modalRef.current.contains(event.target)) {
+				setFormVisible(false);
+			}
+		};
+
+		document.addEventListener("mousedown", handleOutsideClick);
+
+		return () => {
+			document.removeEventListener("mousedown", handleOutsideClick);
+		};
+	}, []);
 	const openForm = () => {
 		setFormVisible(true);
 	};
@@ -48,9 +62,9 @@ const App = () => {
 				<button onClick={openForm}>Open Form</button>
 			</div>
 
-			<div className="modal">
-				<div className="modal-content">
-					{formVisible && (
+			{formVisible && (
+				<div ref={modalRef} className="modal">
+					<div className="modal-content">
 						<form onSubmit={handleSubmit}>
 							<h2>Fill Details</h2>
 							<label htmlFor="username">Username:</label>
@@ -102,9 +116,9 @@ const App = () => {
 								Submit
 							</button>
 						</form>
-					)}
+					</div>
 				</div>
-			</div>
+			)}
 		</div>
 	);
 };
